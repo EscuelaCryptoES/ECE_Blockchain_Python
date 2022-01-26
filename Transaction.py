@@ -1,9 +1,6 @@
-import Client
-
 import binascii
 import datetime
 import collections
-
 from Crypto.Hash import SHA
 
 class Transaction:
@@ -13,10 +10,12 @@ class Transaction:
         self.value = value
         self.time = datetime.datetime.now()
         
+        # Actualización de balances
         recipient.add_balance(value)
         if sender != "Genesis":
             sender.sub_balance(value)
 
+    # Método usado para imprimir la transacción
     def to_dict(self):
         if self.sender == "Genesis":
             identity = "Genesis"
@@ -30,13 +29,17 @@ class Transaction:
             'time' : self.time
         })
 
+    # Firma de la transacción
     def sign_transaction(self):
         signer = self.sender.signer
-        h = SHA.new(str(self.to_dict()).encode('utf8'))
-        return binascii.hexlify(signer.sign(h)).decode('ascii')
+        # New SHA hash
+        hash = SHA.new(str(self.to_dict()).encode('utf8'))
+        return binascii.hexlify(signer.sign(hash)).decode('ascii')
 
+    # método toString 
     def display_transaction(tx):
         dict = tx.to_dict()
+        print ("--------------------------------------------------------------------")
         print ("sender: " + dict['sender'])
         print ("recipient: " + dict['recipient'])
         print ("value: " + str(dict['value']))
